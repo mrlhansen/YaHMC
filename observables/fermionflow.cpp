@@ -2,13 +2,11 @@
 #include <linalg.h>
 #include <global.h>
 
-static SpinorField *phiA;
-static SpinorField *phiB;
-static SpinorField *phiC;
-static SpinorField *delta_phiA;
-static SpinorField *delta_phiB;
-static SpinorField *delta_phiC;
-static int num_sf;
+static SpinorField *phi0;
+static SpinorField *phi1;
+static SpinorField *phi2;
+static SpinorField dphi;
+static int nsf;
 
 static void wf_laplacian(SpinorField &dptr, SpinorField &sptr)
 {
@@ -32,11 +30,11 @@ void wf_fermion_iterate(double epsilon)
 {
 	// Fermion 0
 	represent_gauge_field();
-	for(int i = 0; i < num_sf; i++)
+	for(int i = 0; i < nsf; i++)
 	{
-		wf_laplacian(delta_phiA[i], phiA[i]);
-		spinor_copy(phiB[i], phiA[i]);
-		spinor_mulr_add_assign(phiB[i], epsilon/4.0, delta_phiA[i]);
+		wf_laplacian(dphi, phi0[i]);
+		spinor_copy(phi1[i], phi0[i]);
+		spinor_mulr_add_assign(phi1[i], epsilon/4.0, dphi);
 	}
 
 	// Gauge 0
@@ -45,12 +43,12 @@ void wf_fermion_iterate(double epsilon)
 
 	// Fermion 1
 	represent_gauge_field();
-	for(int i = 0; i < num_sf; i++)
+	for(int i = 0; i < nsf; i++)
 	{
-		wf_laplacian(delta_phiB[i], phiB[i]);
-		spinor_copy(phiC[i], phiA[i]);
-		spinor_mulr_sub_assign(phiC[i], 2.0*epsilon/9.0, delta_phiA[i]);
-		spinor_mulr_add_assign(phiC[i], 8.0*epsilon/9.0, delta_phiB[i]);
+		wf_laplacian(dphi, phi1[i]);
+		spinor_mulr(phi2[i], -8.0/9.0, phi1[i]);
+		spinor_mulr_add_assign(phi2[i], 17.0/9.0, phi0[i]);
+		spinor_mulr_add_assign(phi2[i], 8.0*epsilon/9.0, dphi);
 	}
 
 	// Gauge 1
@@ -59,11 +57,11 @@ void wf_fermion_iterate(double epsilon)
 
 	// Fermion 2
 	represent_gauge_field();
-	for(int i = 0; i < num_sf; i++)
+	for(int i = 0; i < nsf; i++)
 	{
-		wf_laplacian(delta_phiC[i], phiC[i]);
-		spinor_copy(phiA[i], phiB[i]);
-		spinor_mulr_add_assign(phiA[i], 3.0*epsilon/4.0, delta_phiC[i]);
+		wf_laplacian(dphi, phi2[i]);
+		spinor_copy(phi0[i], phi1[i]);
+		spinor_mulr_add_assign(phi0[i], 3.0*epsilon/4.0, dphi);
 	}
 
 	// Gauge 2
@@ -71,27 +69,21 @@ void wf_fermion_iterate(double epsilon)
 	wf_update(0);
 }
 
-void wf_fermion_init(SpinorField *ptr, int nsf)
+void wf_fermion_init(SpinorField *ptr, int count)
 {
 	// Number of fields to be evolved
-	num_sf = nsf;
+	nsf = count;
 
 	// Allocate memory
-	phiA = ptr;
-	phiB = new SpinorField[nsf];
-	phiC = new SpinorField[nsf];
+	phi0 = ptr;
+	phi1 = new SpinorField[nsf];
+	phi2 = new SpinorField[nsf];
 
-	delta_phiA = new SpinorField[nsf];
-	delta_phiB = new SpinorField[nsf];
-	delta_phiC = new SpinorField[nsf];
-
+	spinor_allocate(dphi);
 	for(int i = 0; i < nsf; i++)
 	{
-		spinor_allocate(phiB[i]);
-		spinor_allocate(phiC[i]);
-		spinor_allocate(delta_phiA[i]);
-		spinor_allocate(delta_phiB[i]);
-		spinor_allocate(delta_phiC[i]);
+		spinor_allocate(phi1[i]);
+		spinor_allocate(phi2[i]);
 	}
 
 	// Initialize gauge part
@@ -100,9 +92,6 @@ void wf_fermion_init(SpinorField *ptr, int nsf)
 
 void wf_fermion_free()
 {
-	delete[] phiB;
-	delete[] phiC;
-	delete[] delta_phiA;
-	delete[] delta_phiB;
-	delete[] delta_phiC;
+	delete[] phi1;
+	delete[] phi2;
 }

@@ -29,7 +29,7 @@ The code has several compile flags in *programs/Makefile* that determine the sim
 
 $ ./hmc -i config_file -o log_file
 
-When running the program without any options, the configuration will be read from *hmc.cfg* and the log is written to *stdout*. The default simulation program will perform either a two-flavour simulation or a pure gauge simulation. The table below describe the possible settings in the configuration file, but in some cases additional knowledge of the code might be necessary to fully understand the consequences of the variables, especially in relation to the integration scheme and the action.
+When running the program without any options, the configuration will be read from *hmc.cfg* and the log is written to *stdout*. The default simulation program will perform either a two-flavour simulation or a pure gauge simulation. The table below describes the possible settings in the configuration file, but in some cases additional knowledge of the code might be necessary to fully understand the consequences of the variables, especially in relation to the integration scheme and the action.
 
 | Variable name | Allowed values | Description |
 | ------------- | -------------- | ----------- |
@@ -77,6 +77,8 @@ The following things might be useful to know before using the simulation code.
 * The code is not optimised when using real representations (such as the Adjoint representation). Even when the representation is real, the matrices in the Dirac operator are complex (but with the imaginary part being zero).
 * It is possible to run some check routines by adding the "--run-checks" argument to the main simulation program. The program exits when the checks have finished.
 * All inverter precisions are specified in terms of the squared relative error, hence the maximal precision is around 1e-30.
+* When using SF boundary conditions, in the configuration file, the time direction should be T+2 to accommodate the boundary time slice.
+* At the moment the code is written such that the gauge must be integrated on level 0 and the fermions must be integrated on level 1 or higher.
 
 ## Disclaimer
 The code is provided "as-is" without warranty of any kind. Under no circumstance does the author guarantee that the code produce useful or even correct results. However, if you discover a bug in the code, feel free to report it.

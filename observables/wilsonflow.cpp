@@ -5,42 +5,19 @@
 #include <bcs.h>
 #include <cmath>
 
-static suNg project_to_algebra(suNg &v)
-{
-	suNg tmp;
-	double ctr = 0;
-
-	for(int i = 0; i < NC; i++)
-	{
-		for(int j = 0; j < NC; j++)
-		{
-			tmp.re[i*NC+j] = 0.5*(v.re[i*NC+j] - v.re[j*NC+i]);
-			tmp.im[i*NC+j] = 0.5*(v.im[i*NC+j] + v.im[j*NC+i]);
-		}
-		ctr += tmp.im[i*NC+i];
-	}
-
-	ctr /= NC;
-	for(int i = 0; i < NC; i++)
-	{
-		tmp.im[i*NC+i] -= ctr;
-	}
-
-	return tmp;
-}
-
 void wf_zeta(double alpha)
 {
-	suNg tmp;
+	suNg stmp;
+	suNa atmp;
 
-	#pragma omp parallel for private(tmp)
+	#pragma omp parallel for private(stmp,atmp)
 	sites_for(id)
 	{
 		for(int mu = 0; mu < 4; mu++)
 		{
-			tmp = link(id,mu) * staples_wilson(id,mu);
-			tmp = project_to_algebra(tmp);
-			gfield_copy[4*id+mu] -= alpha*tmp;
+			stmp = link(id,mu) * staples_wilson(id,mu);
+			atmp = algebra_project(stmp, alpha);
+			momentum(id,mu) -= atmp;
 		}
 	}
 }
@@ -54,9 +31,9 @@ void wf_update(double val)
 	{
 		for(int mu = 0; mu < 4; mu++)
 		{
-			tmp = exp(gfield_copy[4*id+mu]);
+			tmp = exp(momentum(id,mu));
 			link(id,mu) = tmp * link(id,mu);
-			gfield_copy[4*id+mu] *= val;
+			momentum(id,mu) *= val;
 		}
 	}
 
@@ -169,11 +146,12 @@ double wf_charge()
 
 void wf_init()
 {
+	suNa zero;
 	sites_for(id)
 	{
 		for(int mu = 0; mu < 4; mu++)
 		{
-			gfield_copy[4*id+mu] = suNg();
+			momentum(id,mu) = zero;
 		}
 	}
 }

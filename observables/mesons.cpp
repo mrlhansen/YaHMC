@@ -161,7 +161,7 @@ void meson_init(double mass, double prec, int hits, int method)
 	if(mes_method == SEMWALL)
 	{
 		lprintf("MESONS", INFO, "Calculation method: SEMWALL");
-		mes_norm = global.vol3*global.vol3;
+		mes_norm = global.vol3;
 		mes_ninv = 4;
 	}
 	else
@@ -173,7 +173,7 @@ void meson_init(double mass, double prec, int hits, int method)
 	if(mes_method == POINT)
 	{
 		lprintf("MESONS", INFO, "Calculation method: point sources");
-		mes_norm = global.vol3;
+		mes_norm = 1;
 		mes_ninv = 4*REPR_DIM;
 	}
 
