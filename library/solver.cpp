@@ -55,7 +55,7 @@ void lu(int N, complex *A, complex *x, complex *b)
 				A[row*N+k] = A[i*N+k];
 				A[i*N+k] = ctmp;
 			}
-			
+
 			itmp = mutate[row];
 			mutate[row] = mutate[i];
 			mutate[i] = itmp;

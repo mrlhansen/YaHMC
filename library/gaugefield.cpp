@@ -116,14 +116,14 @@ void gauge_field_load(const char *filename)
 	if(fp != NULL)
 	{
 		sz = fread(&info, sizeof(header_t), 1, fp);
-		sz  = info.ident != CFG_IDENT;
-		sz += info.version != CFG_VERSION;
-		sz += info.dim_t != global.dim_t;
-		sz += info.dim_x != global.dim_x;
-		sz += info.dim_y != global.dim_y;
-		sz += info.dim_z != global.dim_z;
-		sz += info.nc != NC;
-		sz += info.repr != REPR_ID;
+		sz  = (info.ident != CFG_IDENT);
+		sz += (info.version != CFG_VERSION);
+		sz += (info.dim_t != global.dim_t);
+		sz += (info.dim_x != global.dim_x);
+		sz += (info.dim_y != global.dim_y);
+		sz += (info.dim_z != global.dim_z);
+		sz += (info.nc != NC);
+		sz += (info.repr != REPR_ID);
 
 		if(sz)
 		{

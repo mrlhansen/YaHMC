@@ -33,7 +33,7 @@ suNa& suNa::operator+=(const suNa &rhs)
 {
 	for(int i = 0; i < NG; i++)
 	{
-		av[i] += rhs.av[i];;
+		av[i] += rhs.av[i];
 	}
 	return *this;
 }

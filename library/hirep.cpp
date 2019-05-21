@@ -72,11 +72,11 @@ void gauge_field_load_hirep(const char *filename)
 		swap_int(info, 5);
 		swap_double(&plaq, 1);
 
-		sz  = info[0] != NC;
-		sz += info[1] != global.dim_t;
-		sz += info[2] != global.dim_x;
-		sz += info[3] != global.dim_y;
-		sz += info[4] != global.dim_z;
+		sz  = (info[0] != NC);
+		sz += (info[1] != global.dim_t);
+		sz += (info[2] != global.dim_x);
+		sz += (info[3] != global.dim_y);
+		sz += (info[4] != global.dim_z);
 
 		if(sz)
 		{
@@ -90,7 +90,7 @@ void gauge_field_load_hirep(const char *filename)
 
 		if(ptr)
 		{
-			sscanf(ptr,"n%d", &num_cnfg);
+			sscanf(ptr, "n%d", &num_cnfg);
 		}
 
 		// Load configuration

@@ -1044,7 +1044,7 @@ void geometry_init(int bdr)
 
 	// Parallel dimensions
 #ifdef ENABLE_MPI
-	np_t = var_int("mp:np_t");;
+	np_t = var_int("mp:np_t");
 	np_x = var_int("mp:np_x");
 	np_y = var_int("mp:np_y");
 	np_z = var_int("mp:np_z");
