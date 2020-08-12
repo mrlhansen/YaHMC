@@ -5,7 +5,7 @@
 # Variables
 CC = g++
 LDFLAGS = -lm -lgsl
-CCFLAGS = -Wall -O3 -mfpmath=sse -msse4 -Wno-unknown-pragmas
+CCFLAGS = -Wall -O3 -mfpmath=sse -msse4 -Wno-unknown-pragmas -std=c++11
 
 # Colors and representation
 COLORS = 3

@@ -86,7 +86,7 @@ void gauge_field_load_hirep(const char *filename)
 		// Information
 		num_accept = 0;
 		num_cnfg = 0;
-		ptr = strrchr(filename, 'n');
+		ptr = strrchr((char*)filename, 'n');
 
 		if(ptr)
 		{

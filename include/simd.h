@@ -3,7 +3,9 @@
 
 #include <x86intrin.h>
 
+#ifdef ENABLE_AVX
 typedef __m256d avx_vector;
+#endif
 typedef __m128d sse_vector;
 
 #define avx_load(a,b) \
