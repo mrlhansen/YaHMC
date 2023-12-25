@@ -18,6 +18,7 @@ void mp_transfer_spinor_odd(SpinorField&);
 void mp_transfer_links();
 void mp_transfer_clover_force();
 void mp_global_sum(void*, int);
+void mp_global_max(void*, int);
 void mp_broadcast(int*);
 void mp_barrier();
 void mp_gather(void*, void*, int);
@@ -29,6 +30,7 @@ void mp_scatter(void*, void*, int);
 #define mp_transfer_links()
 #define mp_transfer_clover_force()
 #define mp_global_sum(a,b)
+#define mp_global_max(a,b)
 #define mp_broadcast(a)
 #define mp_barrier()
 #define mp_gather(a,b,c)

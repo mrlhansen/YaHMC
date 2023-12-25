@@ -282,8 +282,12 @@ void mp_transfer_clover_force()
 
 void mp_global_sum(void *buf, int count)
 {
-	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_Allreduce(MPI_IN_PLACE, buf, count, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+}
+
+void mp_global_max(void *buf, int count)
+{
+	MPI_Allreduce(MPI_IN_PLACE, buf, count, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
 }
 
 void mp_broadcast(int *val)
