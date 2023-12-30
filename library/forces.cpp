@@ -40,7 +40,7 @@ static void clover_force_core(double dt)
 	mp_transfer_clover_force();
 
 	// Timing
-	timing_start(tm_cforce);
+	timing_start(tm_clover_force);
 
 	// Perform momentum update
 	#pragma omp parallel for private(fmat,num,sign,W)
@@ -102,20 +102,20 @@ static void clover_force_core(double dt)
 	}
 
 	// Timing
-	timing_end(tm_cforce);
+	timing_end(tm_clover_force);
 }
 
 // Calculates the force: log(det(D_oo))
 void clover_logdet_force(double mass, double residue)
 {
 	// Timing
-	timing_start(tm_cforce);
+	timing_start(tm_clover_force);
 
 	// Compute force matrices
 	compute_clover_force(mass, residue);
 
 	// Timing
-	timing_end(tm_cforce);
+	timing_end(tm_clover_force);
 }
 
 // Calculates the force: lhs^\dagger*\dot{Q}_xx*rhs
@@ -124,7 +124,7 @@ void clover_fermion_force(double residue, SpinorField &lhs, SpinorField &rhs)
 	Spinor tmp_lhs, tmp_rhs;
 
 	// Timing
-	timing_start(tm_cforce);
+	timing_start(tm_clover_force);
 
 	// Construct force matrices
 	#pragma omp parallel for private(tmp_lhs,tmp_rhs)
@@ -168,7 +168,7 @@ void clover_fermion_force(double residue, SpinorField &lhs, SpinorField &rhs)
 	}
 
 	// Timing
-	timing_end(tm_cforce);
+	timing_end(tm_clover_force);
 }
 
 // Calculates the force: lhs^\dagger*\dot{Q}*rhs
@@ -198,7 +198,7 @@ void wilson_fermion_force(double dt, double mass, double residue, SpinorField &l
 	mp_transfer_spinor(rhs);
 
 	// Timing
-	timing_start(tm_wforce);
+	timing_start(tm_hopping_force);
 
 	// Perform momentum update
 	#pragma omp parallel for private(fmat,tmp_lhs,tmp_rhs,fw)
@@ -223,7 +223,7 @@ void wilson_fermion_force(double dt, double mass, double residue, SpinorField &l
 	}
 
 	// Timing
-	timing_end(tm_wforce);
+	timing_end(tm_hopping_force);
 }
 
 // Calculates the force: rhs^\dagger*Q*\dot{Q}*rhs
@@ -265,7 +265,7 @@ void wilson_gauge_force(double dt, double beta)
 	suNg force;
 
 	// Timing
-	timing_start(tm_gforce);
+	timing_start(tm_gauge_force);
 
 	// Perform momentum update
 	#pragma omp parallel for private(force)
@@ -279,7 +279,7 @@ void wilson_gauge_force(double dt, double beta)
 	}
 
 	// Timing
-	timing_end(tm_gforce);
+	timing_end(tm_gauge_force);
 }
 
 // Calculates the force of the Symanzik gauge action
@@ -289,7 +289,7 @@ void improved_gauge_force(double dt, double beta, double c0, double c1)
 	suNg part1, part2, force;
 
 	// Timing
-	timing_start(tm_gforce);
+	timing_start(tm_gauge_force);
 
 	// Perform momentum update
 	#pragma omp parallel for private(part1,part2,force)
@@ -305,5 +305,5 @@ void improved_gauge_force(double dt, double beta, double c0, double c1)
 	}
 
 	// Timing
-	timing_end(tm_gforce);
+	timing_end(tm_gauge_force);
 }

@@ -28,7 +28,7 @@ static void clover_kernel(double mass, SpinorField &dst, SpinorField &src, int p
 	mass = 4.0+mass;
 
 	// Timing
-	timing_start(tm_dirac);
+	timing_start(tm_clover_term);
 
 	// Select spinor block
 	switch(part)
@@ -103,7 +103,7 @@ static void clover_kernel(double mass, SpinorField &dst, SpinorField &src, int p
 	spinor_select_default(src);
 
 	// Timing
-	timing_end(tm_dirac);
+	timing_end(tm_clover_term);
 }
 
 static void clover_inv_kernel(double mass, SpinorField &dst, SpinorField &src, int part, bool assign)
@@ -114,7 +114,7 @@ static void clover_inv_kernel(double mass, SpinorField &dst, SpinorField &src, i
 	mass = 4.0+mass;
 
 	// Timing
-	timing_start(tm_dirac);
+	timing_start(tm_clover_term);
 
 	// Update LDL decomposition
 	compute_ldl_decomp(mass);
@@ -221,7 +221,7 @@ static void clover_inv_kernel(double mass, SpinorField &dst, SpinorField &src, i
 	spinor_select_default(src);
 
 	// Timing
-	timing_end(tm_dirac);
+	timing_end(tm_clover_term);
 }
 
 static void dirac_kernel(SpinorField &dst, SpinorField &src, int part, double sign, bool assign)
@@ -253,7 +253,7 @@ static void dirac_kernel(SpinorField &dst, SpinorField &src, int part, double si
 	}
 
 	// Timing
-	timing_start(tm_dirac);
+	timing_start(tm_hopping_term);
 
 	#pragma omp parallel for private(stmp,sum,link,fw,bk) schedule(guided)
 	spinor_for(id,src)
@@ -694,7 +694,7 @@ static void dirac_kernel(SpinorField &dst, SpinorField &src, int part, double si
 	}
 
 	// Timing
-	timing_end(tm_dirac);
+	timing_end(tm_hopping_term);
 
 	// Boundary conditions
 	apply_bcs_on_spinor_field(dst);

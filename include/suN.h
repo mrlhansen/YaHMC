@@ -15,10 +15,10 @@ struct suNa {
 
 	suNa& operator+=(const suNa&);
 	friend suNa operator+(const suNa&, const suNa&);
-	
+
 	suNa& operator-=(const suNa&);
 	friend suNa operator-(const suNa&, const suNa&);
-	
+
 	suNa& operator*=(const double&);
 	friend suNa operator*(const double&, const suNa&);
 };

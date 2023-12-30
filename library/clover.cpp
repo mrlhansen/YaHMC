@@ -4,6 +4,7 @@
 #include <bcs.h>
 #include <memory.h>
 #include <wilsonloop.h>
+#include <timing.h>
 #include <cmath>
 
 #define N (2*REPR_DIM)
@@ -334,12 +335,15 @@ void compute_clover_term()
 	}
 
 	cl_sigma = 0xF00F;
+	timing_start(tm_clover_term);
 
 	#pragma omp parallel for
 	sites_for(id)
 	{
 		_compute_clover_term(id);
 	}
+
+	timing_end(tm_clover_term);
 }
 
 void clover_init(double csw)

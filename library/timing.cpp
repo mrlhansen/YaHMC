@@ -5,6 +5,16 @@
 static double tm[tm_num_types];
 static double tm_total;
 
+static const char *tm_names[tm_num_types] = {
+	"linear algebra",
+	"hopping term",
+	"clover term",
+	"gauge force",
+	"hopping force",
+	"clover force",
+	"communication",
+};
+
 double timestamp()
 {
 	struct timeval tm;
@@ -33,14 +43,15 @@ void timing_end(tm_type t)
 
 void timing_print()
 {
-	double total;
+	double total, other;
 	total = timestamp() - tm_total;
+	other = total;
 
 	lprintf("TIMING", DEBUG, "total time: %1.4f seconds", total);
-	lprintf("TIMING", DEBUG, "linear algebra: %1.4f seconds", tm[tm_linalg]);
-	lprintf("TIMING", DEBUG, "dirac operator: %1.4f seconds", tm[tm_dirac]);
-	lprintf("TIMING", DEBUG, "gauge force: %1.4f seconds", tm[tm_gforce]);
-	lprintf("TIMING", DEBUG, "hopping force: %1.4f seconds", tm[tm_wforce]);
-	lprintf("TIMING", DEBUG, "clover force: %1.4f seconds", tm[tm_cforce]);
-	lprintf("TIMING", DEBUG, "communication: %1.4f seconds", tm[tm_mpi]);
+	for(int i = 0; i < tm_num_types; i++)
+	{
+		other -= tm[i];
+		lprintf("TIMING", DEBUG, "%s: %1.4f seconds (%1.1f%%)", tm_names[i], tm[i], 100*tm[i]/total);
+	}
+	lprintf("TIMING", DEBUG, "other: %1.4f seconds (%1.1f%%)", other, 100*other/total);
 }

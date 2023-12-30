@@ -2,12 +2,13 @@
 #define TIMING_H
 
 typedef enum {
-	tm_mpi = 0,
-	tm_dirac,
-	tm_gforce,
-	tm_wforce,
-	tm_cforce,
-	tm_linalg,
+	tm_linalg = 0,
+	tm_hopping_term,
+	tm_clover_term,
+	tm_gauge_force,
+	tm_hopping_force,
+	tm_clover_force,
+	tm_mpi,
 	tm_num_types,
 } tm_type;
 
