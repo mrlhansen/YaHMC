@@ -44,5 +44,6 @@
 
 void repr_init();
 void represent_gauge_field();
+void set_gauge_field_state(bool);
 
 #endif

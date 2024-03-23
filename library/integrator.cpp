@@ -1,5 +1,6 @@
 #include <integrator.h>
 #include <update.h>
+#include <repr.h>
 
 // Update dynamical fields
 static void update_fields(double dt, int_par *par)
@@ -7,10 +8,12 @@ static void update_fields(double dt, int_par *par)
 	if(par->next == 0)
 	{
 		update_links(dt);
+		set_gauge_field_state(true);
 	}
 	else
 	{
 		par->next->integrator(dt, par->next);
+		set_gauge_field_state(false);
 	}
 }
 

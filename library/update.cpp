@@ -137,15 +137,8 @@ void update_links(double eps)
 	// Boundary conditions
 	apply_bcs_on_gauge_field();
 
-	// Only represent gauge field if necessary
-	if(var_int("act:puregauge") == 0)
-	{
-		represent_gauge_field();
-	}
-	else
-	{
-		mp_transfer_links();
-	}
+	// Communication
+	mp_transfer_links();
 }
 
 void update_momenta(double dt, int level)

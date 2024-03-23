@@ -278,3 +278,21 @@ void represent_gauge_field()
 	// Boundary conditions
 	apply_bcs_on_represented_gauge_field();
 }
+
+void set_gauge_field_state(bool state)
+{
+	static bool dirty = false;
+
+	if(state)
+	{
+		dirty = true;
+	}
+	else
+	{
+		if(dirty)
+		{
+			represent_gauge_field();
+			dirty = false;
+		}
+	}
+}
