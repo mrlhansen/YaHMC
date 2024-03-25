@@ -4,15 +4,13 @@
 #include <string>
 using namespace std;
 
-double var_dbl(string);
-void var_dbl(string, double);
+extern int var_num_int;
+extern int var_num_mon;
 
-int var_int(string);
-void var_int(string, int);
-
-string var_str(string);
-void var_str(string, string);
-const char* var_cstr(string);
+double var_dbl(string, string);
+int var_int(string, string);
+string var_str(string, string);
+const char* var_cstr(string, string);
 
 void var_init(string);
 

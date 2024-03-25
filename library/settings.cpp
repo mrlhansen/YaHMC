@@ -1,6 +1,7 @@
 #include <settings.h>
 #include <logger.h>
 #include <fstream>
+#include <cstring>
 #include <map>
 
 typedef struct {
@@ -10,9 +11,12 @@ typedef struct {
 } value_t;
 
 static map<string,value_t> list;
+int var_num_int = 0;
+int var_num_mon = 0;
 
-double var_dbl(string key)
+double var_dbl(string section, string key)
 {
+	key = section + "." + key;
 	if(list.find(key) == list.end())
 	{
 		lprintf("SETTINGS", WARNING, "Parameter '%s' not found in settings", key.c_str());
@@ -24,13 +28,9 @@ double var_dbl(string key)
 	}
 }
 
-void var_dbl(string key, double val)
+int var_int(string section, string key)
 {
-	list[key].dbl = val;
-}
-
-int var_int(string key)
-{
+	key = section + "." + key;
 	if(list.find(key) == list.end())
 	{
 		lprintf("SETTINGS", WARNING, "Parameter '%s' not found in settings", key.c_str());
@@ -42,13 +42,9 @@ int var_int(string key)
 	}
 }
 
-void var_int(string key, int val)
+string var_str(string section, string key)
 {
-	list[key].num = val;
-}
-
-string var_str(string key)
-{
+	key = section + "." + key;
 	if(list.find(key) == list.end())
 	{
 		lprintf("SETTINGS", WARNING, "Parameter '%s' not found in settings", key.c_str());
@@ -60,8 +56,9 @@ string var_str(string key)
 	}
 }
 
-const char* var_cstr(string key)
+const char* var_cstr(string section, string key)
 {
+	key = section + "." + key;
 	if(list.find(key) == list.end())
 	{
 		lprintf("SETTINGS", WARNING, "Parameter '%s' not found in settings", key.c_str());
@@ -73,17 +70,13 @@ const char* var_cstr(string key)
 	}
 }
 
-void var_str(string key, string val)
-{
-	list[key].str = val;
-}
-
 void var_init(string filename)
 {
 	char key[128];
 	char val[128];
 	string s;
 	ifstream f;
+	string section;
 
 	f.open(filename);
 
@@ -103,11 +96,38 @@ void var_init(string filename)
 			continue;
 		}
 
+		if(s.length() == 0)
+		{
+			continue;
+		}
+
+		if(sscanf(s.c_str(), "[%[a-z0-9]]", key) == 1)
+		{
+			section = key;
+
+			if(strcmp(key, "integrator") == 0)
+			{
+				sprintf(val, "%s%d", key, var_num_int);
+				section = val;
+				var_num_int++;
+			}
+
+			if(strcmp(key, "monomial") == 0)
+			{
+				sprintf(val, "%s%d", key, var_num_mon);
+				section = val;
+				var_num_mon++;
+			}
+
+			continue;
+		}
+
 		if(sscanf(s.c_str(), "%s = %s", key, val) == 2)
 		{
-			list[key].dbl = atof(val);
-			list[key].num = atof(val);
-			list[key].str = val;
+			s = section + "." + key;
+			list[s].dbl = atof(val);
+			list[s].num = atof(val);
+			list[s].str = val;
 		}
 	}
 

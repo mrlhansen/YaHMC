@@ -1035,19 +1035,19 @@ void geometry_init(int bdr)
 	border = bdr;
 
 	// Global dimensions
-	global.dim_t = var_int("lat:dim_t");
-	global.dim_x = var_int("lat:dim_x");
-	global.dim_y = var_int("lat:dim_y");
-	global.dim_z = var_int("lat:dim_z");
+	global.dim_t = var_int("lattice", "dim_t");
+	global.dim_x = var_int("lattice", "dim_x");
+	global.dim_y = var_int("lattice", "dim_y");
+	global.dim_z = var_int("lattice", "dim_z");
 	global.vol3 = global.dim_x * global.dim_y * global.dim_z;
 	global.vol4 = global.dim_t * global.vol3;
 
 	// Parallel dimensions
 #ifdef ENABLE_MPI
-	np_t = var_int("mp:np_t");
-	np_x = var_int("mp:np_x");
-	np_y = var_int("mp:np_y");
-	np_z = var_int("mp:np_z");
+	np_t = var_int("parallel", "np_t");
+	np_x = var_int("parallel", "np_x");
+	np_y = var_int("parallel", "np_y");
+	np_z = var_int("parallel", "np_z");
 #else
 	np_t = 1;
 	np_x = 1;

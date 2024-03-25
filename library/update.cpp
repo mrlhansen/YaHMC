@@ -17,80 +17,162 @@ int num_accept = 0;
 
 void hmc_init()
 {
-	Monomial *mono;
+	int *m = new int[var_num_int];
+	Monomial *mono = 0;
+	char section[32];
+	int level, steps;
+	const char *sc;
+	string s;
+
+	// Not found
+	if(var_num_int == 0)
+	{
+		lprintf("UPDATE", CRITICAL, "Integrator: not found");
+	}
+
+	if(var_num_mon == 0)
+	{
+		lprintf("UPDATE", CRITICAL, "Monomials: not found");
+	}
+
+	// Mapping
+	for(int i = 0; i < var_num_int; i++)
+	{
+		m[i] = -1;
+	}
+
+	for(int i = 0; i < var_num_int; i++)
+	{
+		sprintf(section, "integrator%d", i);
+		level = var_int(section, "level");
+
+		if(level < 0 || level >= var_num_int)
+		{
+			lprintf("UPDATE", CRITICAL, "Integrator: invalid level: %d", level);
+		}
+		if(m[level] >= 0)
+		{
+			lprintf("UPDATE", CRITICAL, "Integrator: duplicated level: %d", level);
+		}
+
+		m[level] = i;
+	}
+
+	// Integrator
 	ipar = new int_par;
 	int_par *ip = ipar;
 
-	// Add monomials and integrators
-	if(var_int("act:puregauge"))
+	for(int i = var_num_int-1; i >= 0; i--)
 	{
-		// Gauge
-		mono = new MonomialGauge(var_dbl("run:beta"), var_dbl("run:c0"));
-		monomials.add(mono, 0);
+		sprintf(section, "integrator%d", i);
+		steps = var_int(section, "steps");
+		s = var_str(section, "type");
+		sc = s.c_str();
 
-		// Integrator
-		ip->level = 0;
-		ip->steps = var_int("int:gsteps");
-		ip->integrator = &o2mn_multilevel;
-		ip->next = 0;
-	}
-	else if(var_dbl("act:dm"))
-	{
-		// Gauge
-		mono = new MonomialGauge(var_dbl("run:beta"), var_dbl("run:c0"));
-		monomials.add(mono, 0);
+		if(steps <= 0)
+		{
+			lprintf("UPDATE", CRITICAL, "Integrator: invalid steps: %d", steps);
+		}
 
-		// HMC
-		mono = new MonomialHMC(var_dbl("run:mass"), var_dbl("act:dm"), var_dbl("inv:prec"), var_int("mre:past"));
-		monomials.add(mono, 1);
+		ip->level = i;
+		ip->steps = steps;
 
-		// Hasenbusch
-		mono = new MonomialHB(var_dbl("run:mass"), var_dbl("act:dm"), var_dbl("inv:prec"));
-		monomials.add(mono, 2);
+		if(s.compare("o2lf") == 0)
+		{
+			ip->integrator = &o2lf_multilevel;
+		}
+		else if(s.compare("o2mn") == 0)
+		{
+			ip->integrator = &o2mn_multilevel;
+		}
+		else if(s.compare("o4mn") == 0)
+		{
+			ip->integrator = &o4mn_multilevel;
+		}
+		else
+		{
+			lprintf("UPDATE", CRITICAL, "Integrator: invalid type: %s", sc);
+		}
 
-		// Integrator
-		ip->level = 2;
-		ip->steps = var_int("int:nsteps");
-		ip->integrator = &o2mn_multilevel;
-		ip->next = new int_par;
-		ip = ip->next;
+		if(i > 0)
+		{
+			ip->next = new int_par;
+			ip = ip->next;
+		}
+		else
+		{
+			ip->next = 0;
+		}
 
-		ip->level = 1;
-		ip->steps = var_int("int:hsteps");
-		ip->integrator = &o2mn_multilevel;
-		ip->next = new int_par;
-		ip = ip->next;
-
-		ip->level = 0;
-		ip->steps = var_int("int:gsteps");
-		ip->integrator = &o2mn_multilevel;
-		ip->next = 0;
-	}
-	else
-	{
-		// Gauge
-		mono = new MonomialGauge(var_dbl("run:beta"), var_dbl("run:c0"));
-		monomials.add(mono, 0);
-
-		// HMC
-		mono = new MonomialHMC(var_dbl("run:mass"), 0, var_dbl("inv:prec"), var_int("mre:past"));
-		monomials.add(mono, 1);
-
-		// Integrator
-		ip->level = 1;
-		ip->steps = var_int("int:nsteps");
-		ip->integrator = &o2mn_multilevel;
-		ip->next = new int_par;
-		ip = ip->next;
-
-		ip->level = 0;
-		ip->steps = var_int("int:gsteps");
-		ip->integrator = &o2mn_multilevel;
-		ip->next = 0;
+		lprintf("UPDATE", INFO, "Integrator: level = %d, type = %s, steps = %d", i, sc, steps);
 	}
 
-	// Log info
-	lprintf("UPDATE", INFO, "Integration steps: %d, length: %1.2f", var_int("int:nsteps"), var_dbl("int:length"));
+	// Monomials
+	for(int i = 0; i < var_num_int; i++)
+	{
+		m[i] = 0;
+	}
+
+	for(int i = 0; i < var_num_mon; i++)
+	{
+		sprintf(section, "monomial%d", i);
+		level = var_int(section, "level");
+		s = var_str(section, "type");
+		sc = s.c_str();
+
+		if(level < 0 || level >= var_num_int)
+		{
+			lprintf("UPDATE", CRITICAL, "Monomial: invalid integrator level: %d", level);
+		}
+
+		if(s.compare("gauge") == 0)
+		{
+			if(level > 0)
+			{
+				lprintf("UPDATE", CRITICAL, "Monomial: type '%s' must be on integrator level 0", sc);
+			}
+			mono = new MonomialGauge(var_dbl(section, "beta"), var_dbl(section, "c0"));
+		}
+		else if(s.compare("hmc") == 0)
+		{
+			if(level == 0)
+			{
+				lprintf("UPDATE", CRITICAL, "Monomial: type '%s' cannot be on integrator level 0", sc);
+			}
+			mono = new MonomialHMC(var_dbl(section, "mass"), var_dbl(section, "dm"), var_dbl(section, "prec"), var_int(section, "mre_past"));
+		}
+		else if(s.compare("hasenbusch") == 0)
+		{
+			if(level == 0)
+			{
+				lprintf("UPDATE", CRITICAL, "Monomial: type '%s' cannot be on integrator level 0", sc);
+			}
+			mono = new MonomialHB(var_dbl(section, "mass"), var_dbl(section, "dm"), var_dbl(section, "prec"));
+		}
+		else if(s.compare("rhmc") == 0)
+		{
+			if(level == 0)
+			{
+				lprintf("UPDATE", CRITICAL, "Monomial: type '%s' cannot be on integrator level 0", sc);
+			}
+			mono = new MonomialRHMC(var_dbl(section, "mass"), var_dbl(section, "rprec"), var_dbl(section, "prec"));
+		}
+		else
+		{
+			lprintf("UPDATE", CRITICAL, "Monomial: invalid type: %s", sc);
+		}
+
+		m[level]++;
+		monomials.add(mono, level);
+	}
+
+	for(int i = 0; i < var_num_int; i++)
+	{
+		if(m[i] == 0)
+		{
+			lprintf("UPDATE", CRITICAL, "Integrator: no monomials on level: %d", i);
+		}
+	}
 }
 
 double hamiltonian()
@@ -173,7 +255,7 @@ void reunitarize()
 	}
 }
 
-void update()
+void update(double length)
 {
 	double dH, p, ts;
 	int accepted;
@@ -194,7 +276,7 @@ void update()
 	mvm_reset();
 
 	// Perform integration
-	ipar->integrator(var_dbl("int:length"), ipar);
+	ipar->integrator(length, ipar);
 
 	// Calculate Hamiltonian and time difference
 	dH = hamiltonian() - dH;

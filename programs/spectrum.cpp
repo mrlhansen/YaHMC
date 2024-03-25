@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	var_init(ifn);
 
 	// Enable logger
-	logger_init(ofn, var_int("log:level"));
+	logger_init(ofn, var_int("log", "level"));
 
 	// Setup geometry
 	geometry_init(1);
@@ -66,23 +66,22 @@ int main(int argc, char *argv[])
 	mp_setup();
 
 	// Initialize random generator
-	rand_init(var_int("rand:seed"));
+	rand_init(var_int("rand", "seed"));
 
 	// Setup representation
 	repr_init();
 
 	// Initialize boundary conditions
-	bcs_init(var_dbl("bc:cf"));
+	bcs_init(var_dbl("clover", "cf"));
 
 	// Initialize clover term
-	clover_init(var_dbl("mes:csw"));
+	clover_init(var_dbl("clover", "csw"));
 
 	// Initialize gauge field
 	gauge_field_init();
 
-
 	// Initialize mesons
-	meson_init(var_dbl("mes:mass"), var_dbl("mes:prec"), var_int("mes:hits"), var_int("mes:method"));
+	meson_init(var_dbl("mesons", "mass"), var_dbl("mesons", "prec"), var_int("mesons", "hits"), var_int("mesons", "method"));
 
 	// Check list file
 	if(lfn.empty())

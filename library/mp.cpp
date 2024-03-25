@@ -34,7 +34,7 @@ void mp_setup()
 {
 	#ifdef ENABLE_OMP
 
-	int threads = var_int("mp:threads");
+	int threads = var_int("parallel", "threads");
 
 	// Number of OpenMP threads
 	if(threads)

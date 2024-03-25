@@ -48,31 +48,29 @@ static void parse_args(int argc, char *argv[])
 static void load_configuration()
 {
 	char filename[256];
-	sprintf(filename, "%s/%s", var_cstr("save:dir"), var_cstr("run:start"));
+	sprintf(filename, "%s/%s", var_cstr("cnfg", "dir"), var_cstr("cnfg", "start"));
 	gauge_field_load(filename);
 }
 
 static void save_configuration()
 {
 	char filename[256];
-	sprintf(filename, "%s/%s_%dx%dx%dx%d_nc%db%1.4fm%1.4fn%04d",
-			  var_cstr("save:dir"),
-			  var_cstr("save:name"),
+	sprintf(filename, "%s/%s_%dx%dx%dx%d_nc%d_n%04d",
+			  var_cstr("cnfg", "dir"),
+			  var_cstr("cnfg", "prefix"),
 			  global.dim_t,
 			  global.dim_x,
 			  global.dim_y,
 			  global.dim_z,
 			  NC,
-			  var_dbl("run:beta"),
-			  fabs(var_dbl("run:mass")),
 			  num_cnfg);
 	gauge_field_save(filename);
 }
 
 int main(int argc, char *argv[])
 {
+	int border, freq;
 	complex val;
-	int border;
 
 	// Handle arguments
 	parse_args(argc, argv);
@@ -84,17 +82,18 @@ int main(int argc, char *argv[])
 	var_init(ifn);
 
 	// Enable logger
-	logger_init(ofn, var_int("log:level"));
+	logger_init(ofn, var_int("log", "level"));
 
 	// Determine border size
-	if(var_dbl("run:c0") == 1.0)
-	{
-		border = 1;
-	}
-	else
-	{
-		border = 2;
-	}
+	// if(var_dbl("run:c0") == 1.0)
+	// {
+	// 	border = 1;
+	// }
+	// else
+	// {
+	// 	border = 2;
+	// }
+	border = 1;
 
 	// Setup geometry
 	geometry_init(border);
@@ -103,26 +102,26 @@ int main(int argc, char *argv[])
 	mp_setup();
 
 	// Initialize random generator
-	rand_init(var_int("rand:seed"));
+	rand_init(var_int("rand", "seed"));
 
 	// Setup representation
 	repr_init();
 
 	// Initialize boundary conditions
-	bcs_init(var_dbl("bc:cf"));
+	bcs_init(var_dbl("clover", "cf"));
 
 	// Initialize clover term
-	clover_init(var_dbl("run:csw"));
+	clover_init(var_dbl("clover", "csw"));
 
 	// Initialize gauge field
 	gauge_field_init();
 
 	// Load or set gauge field
-	if(var_str("run:start").compare("random") == 0)
+	if(var_str("cnfg", "start").compare("random") == 0)
 	{
 		gauge_field_set_random();
 	}
-	else if(var_str("run:start").compare("unit") == 0)
+	else if(var_str("cnfg", "start").compare("unit") == 0)
 	{
 		gauge_field_set_unit();
 	}
@@ -145,27 +144,27 @@ int main(int argc, char *argv[])
 	hmc_init();
 
 	// Initialize mesonic correlators
-	if(var_int("mes:freq"))
+	if(var_int("observables", "mes_freq"))
 	{
-		meson_init(var_dbl("run:mass"), var_dbl("mes:prec"), var_int("mes:hits"), var_int("mes:method"));
+		meson_init(var_dbl("observables", "mes_mass"), var_dbl("observables", "mes_prec"), var_int("observables", "mes_hits"), var_int("observables", "mes_method"));
 	}
 
 	// Generate configurations
-	while(num_cnfg < var_int("run:last"))
+	while(num_cnfg < var_int("cnfg", "last"))
 	{
-		update();
+		update(var_dbl("traj", "length"));
 
-		if(var_int("plaq:freq"))
+		if(freq = var_int("observables", "plaq_freq"), freq)
 		{
-			if((num_cnfg % var_int("plaq:freq")) == 0)
+			if((num_cnfg % freq) == 0)
 			{
 				lprintf("HMC", INFO, "Plaquette: %1.6e", avr_wilson(1,1));
 			}
 		}
 
-		if(var_int("poly:freq"))
+		if(freq = var_int("observables", "poly_freq"), freq)
 		{
-			if((num_cnfg % var_int("poly:freq")) == 0)
+			if((num_cnfg %freq) == 0)
 			{
 				val = avr_polyakov(0);
 				lprintf("HMC", INFO, "Polyakov, mu = 0: %+1.6e %+1.6e", val.re, val.im);
@@ -178,17 +177,17 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		if(var_int("mes:freq"))
+		if(freq = var_int("observables", "mes_freq"), freq)
 		{
-			if((num_cnfg % var_int("mes:freq")) == 0)
+			if((num_cnfg % freq) == 0)
 			{
 				meson_measure();
 			}
 		}
 
-		if(var_int("save:freq"))
+		if(freq = var_int("cnfg", "freq"), freq)
 		{
-			if((num_cnfg % var_int("save:freq")) == 0)
+			if((num_cnfg % freq) == 0)
 			{
 				save_configuration();
 			}

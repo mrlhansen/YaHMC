@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	var_init(ifn);
 
 	// Enable logger
-	logger_init(ofn, var_int("log:level"));
+	logger_init(ofn, var_int("log", "level"));
 
 	// Setup geometry
 	geometry_init(1);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 	mp_setup();
 
 	// Initialize random generator
-	rand_init(var_int("rand:seed"));
+	rand_init(var_int("rand", "seed"));
 
 	// Setup representation
 	repr_init();
@@ -94,9 +94,9 @@ int main(int argc, char *argv[])
 	}
 
 	// Settings
-	tmax  = var_dbl("wf:tmax");
-	prec  = var_dbl("wf:prec");
-	tmeas = var_dbl("wf:tmeas");
+	tmax  = var_dbl("wilsonflow", "tmax");
+	prec  = var_dbl("wilsonflow", "prec");
+	tmeas = var_dbl("wilsonflow", "tmeas");
 	outer = tmax / tmeas;
 	inner = tmeas / prec;
 	ncfg = 0;
