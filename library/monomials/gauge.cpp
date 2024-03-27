@@ -8,7 +8,7 @@ MonomialGauge::MonomialGauge(double _beta, double _c0)
 	beta = _beta;
 	c0 = _c0;
 	c1 = (1.0-c0)/8.0;
-	improved = (fabs(c1) > 1e-10);
+	improved = (fabs(c1) > 1e-8);
 	lprintf("MONOMIAL", INFO, "Gauge: beta = %1.6f, c0 = %1.6f, c1 = %1.6f", beta, c0, c1);
 }
 

@@ -1,7 +1,3 @@
-// Martin Hansen (martin.hansen@roma2.infn.it)
-// December 2, 2018
-// Copyright (C), all rights reserved.
-
 #include <global.h>
 #include <random.h>
 #include <staples.h>
@@ -85,15 +81,14 @@ int main(int argc, char *argv[])
 	logger_init(ofn, var_int("log", "level"));
 
 	// Determine border size
-	// if(var_dbl("run:c0") == 1.0)
-	// {
-	// 	border = 1;
-	// }
-	// else
-	// {
-	// 	border = 2;
-	// }
-	border = 1;
+	if(detect_improved_gauge())
+	{
+		border = 2;
+	}
+	else
+	{
+		border = 1;
+	}
 
 	// Setup geometry
 	geometry_init(border);

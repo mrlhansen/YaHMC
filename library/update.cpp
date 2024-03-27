@@ -15,6 +15,29 @@ static int_par *ipar;
 int num_cnfg = 0;
 int num_accept = 0;
 
+bool detect_improved_gauge()
+{
+	char section[32];
+	double c0;
+	string s;
+
+	for(int i = 0; i < var_num_mon; i++)
+	{
+		sprintf(section, "monomial%d", i);
+		s = var_str(section, "type");
+		if(s.compare("gauge"))
+		{
+			continue;
+		}
+
+		c0 = var_dbl(section, "c0");
+		c0 = fabs(c0 - 1.0);
+		return (c0 > 1e-8);
+	}
+
+	return false;
+}
+
 void hmc_init()
 {
 	int *m = new int[var_num_int];

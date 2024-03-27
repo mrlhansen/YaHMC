@@ -1,7 +1,3 @@
-# Martin Hansen (martin.hansen@roma2.infn.it)
-# December 2, 2018
-# Copyright (C), all rights reserved.
-
 # Variables
 CC = g++
 LDFLAGS = -lm -lgsl

@@ -91,12 +91,17 @@ void var_init(string filename)
 
 	while(getline(f, s))
 	{
+		if(s.length() == 0)
+		{
+			continue;
+		}
+
 		if(s.find("//") == 0)
 		{
 			continue;
 		}
 
-		if(s.length() == 0)
+		if(s.find("#") == 0)
 		{
 			continue;
 		}
